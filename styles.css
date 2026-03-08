@@ -1,0 +1,15 @@
+body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 0; background: #fafafa; }
+.container { max-width: 980px; margin: 24px auto; padding: 0 16px; }
+h1 { margin: 0 0 6px; }
+.sub { margin: 0 0 16px; color: #555; }
+.card { background: white; border: 1px solid #eee; border-radius: 10px; padding: 16px; margin: 12px 0; }
+label { display: block; margin-bottom: 6px; color: #333; }
+select, button { padding: 8px 10px; border-radius: 8px; border: 1px solid #ddd; background: white; }
+.controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.stats { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 10px; color: #333; }
+.stat { padding: 10px; border: 1px dashed #ddd; border-radius: 10px; min-width: 160px; }
+.stat b { display: block; font-size: 18px; margin-top: 4px; }
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 10px; border-bottom: 1px solid #eee; text-align: left; }
+.replayText { margin-top: 10px; font-size: 16px; color: #333; }
+.footer { color: #777; font-size: 12px; margin-top: 18px; }
