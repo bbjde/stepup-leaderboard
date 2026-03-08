@@ -9,7 +9,6 @@ let replayIndex = 0;
 let replaySeries = [];
 
 function isDateLike(col) {
-  // Your export has ISO-looking dates like 2026-01-01
   return /^\d{4}-\d{2}-\d{2}$/.test(col.trim());
 }
 
@@ -31,13 +30,12 @@ function cumulative(arr) {
 }
 
 function getName(row) {
-  // In your file it’s "Name"
   return row["Name"] ?? row["NAME"] ?? row["Participant"] ?? "";
 }
 
 function buildDateCols(rows) {
   const cols = Object.keys(rows[0] || {});
-  return cols.filter(isDateLike).sort(); // keep chronological
+  return cols.filter(isDateLike).sort();
 }
 
 function getSeriesForPerson(row) {
@@ -55,7 +53,6 @@ function buildLeaderboard() {
   const tbody = document.querySelector("#leaderboard tbody");
   tbody.innerHTML = "";
 
-  // Prefer "Total Steps" column if present; otherwise compute from dates
   const ranked = allRows.map(r => {
     const name = getName(r);
     const total = toNumber(r["Total Steps"]) ?? sum(dateCols.map(d => toNumber(r[d])));
@@ -105,12 +102,22 @@ function buildCharts(row) {
     type: "line",
     data: {
       labels,
-      datasets: [{ label: "Steps", data: steps }]
+      datasets: [{
+        label: "Steps",
+        data: steps,
+        tension: 0.3,
+        pointRadius: 4,
+        pointHoverRadius: 6
+      }]
     },
     options: {
       responsive: true,
-      animation: false,
-      scales: { y: { beginAtZero: true } }
+      animation: {
+        duration: 350
+      },
+      scales: {
+        y: { beginAtZero: true }
+      }
     }
   });
 
@@ -118,12 +125,22 @@ function buildCharts(row) {
     type: "line",
     data: {
       labels,
-      datasets: [{ label: "Cumulative", data: cum }]
+      datasets: [{
+        label: "Cumulative",
+        data: cum,
+        tension: 0.3,
+        pointRadius: 4,
+        pointHoverRadius: 6
+      }]
     },
     options: {
       responsive: true,
-      animation: false,
-      scales: { y: { beginAtZero: true } }
+      animation: {
+        duration: 350
+      },
+      scales: {
+        y: { beginAtZero: true }
+      }
     }
   });
 }
@@ -138,7 +155,6 @@ function onPersonChange() {
   setStats(row);
   buildCharts(row);
 
-  // prep replay
   const { steps, cum } = getSeriesForPerson(row);
   replaySeries = dateCols.map((d, i) => ({ date: d, steps: steps[i], cum: cum[i] }));
   replayIndex = 0;
@@ -156,26 +172,33 @@ function setReplayText(item) {
 
 function playReplay() {
   stopReplay();
+
   const speed = Number(document.getElementById("speedSelect").value) || 500;
+  replayIndex = 0;
+
+  dailyChart.data.labels = replaySeries.map(x => x.date);
+  cumChart.data.labels = replaySeries.map(x => x.date);
+
+  dailyChart.data.datasets[0].data = replaySeries.map(() => null);
+  cumChart.data.datasets[0].data = replaySeries.map(() => null);
+
+  dailyChart.update();
+  cumChart.update();
 
   replayTimer = setInterval(() => {
     if (replayIndex >= replaySeries.length) {
       stopReplay();
       return;
     }
+
     const item = replaySeries[replayIndex];
     setReplayText(item);
 
-    // Update charts progressively (show “wrap-up” effect)
-    const partialSteps = replaySeries.slice(0, replayIndex + 1).map(x => x.steps);
-    const partialCum = replaySeries.slice(0, replayIndex + 1).map(x => x.cum);
+    const partialSteps = replaySeries.map((x, i) => i <= replayIndex ? x.steps : null);
+    const partialCum = replaySeries.map((x, i) => i <= replayIndex ? x.cum : null);
 
     dailyChart.data.datasets[0].data = partialSteps;
     cumChart.data.datasets[0].data = partialCum;
-
-    // Keep labels aligned
-    dailyChart.data.labels = replaySeries.slice(0, replayIndex + 1).map(x => x.date);
-    cumChart.data.labels = replaySeries.slice(0, replayIndex + 1).map(x => x.date);
 
     dailyChart.update();
     cumChart.update();
@@ -224,7 +247,6 @@ function loadCSV() {
       initDropdown();
       wireReplayButtons();
 
-      // default selection
       document.getElementById("personSelect").selectedIndex = 0;
       onPersonChange();
     },

@@ -19,7 +19,23 @@
 
       <div class="stats" id="stats"></div>
     </div>
-
+    
+    <div class="card">
+      <h2>Wrap-up replay</h2>
+      <div class="controls">
+        <button id="playBtn">Play</button>
+        <button id="pauseBtn">Pause</button>
+        <label>Speed
+          <select id="speedSelect">
+            <option value="900">Slow</option>
+            <option value="500" selected>Normal</option>
+            <option value="250">Fast</option>
+          </select>
+        </label>
+      </div>
+      <div id="replayText" class="replayText"></div>
+    </div>
+    
     <div class="card">
       <h2>Daily steps</h2>
       <canvas id="dailyChart"></canvas>
@@ -40,21 +56,6 @@
       </table>
     </div>
 
-    <div class="card">
-      <h2>Wrap-up replay</h2>
-      <div class="controls">
-        <button id="playBtn">Play</button>
-        <button id="pauseBtn">Pause</button>
-        <label>Speed
-          <select id="speedSelect">
-            <option value="900">Slow</option>
-            <option value="500" selected>Normal</option>
-            <option value="250">Fast</option>
-          </select>
-        </label>
-      </div>
-      <div id="replayText" class="replayText"></div>
-    </div>
 
     <p class="footer">Data source: weekly StepUp group export</p>
   </div>
