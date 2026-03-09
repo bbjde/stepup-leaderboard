@@ -66,12 +66,13 @@ function buildLeaderboard() {
     tbody.appendChild(tr);
   });
 }
+// ...existing code...
 
 function setStats(row) {
   const name = getName(row);
   const goal = toNumber(row["Daily Step Goal"]);
   const total = toNumber(row["Total Steps"]) ?? sum(dateCols.map(d => toNumber(row[d])));
-  const avg = toNumber(row["Avg Daily Steps"]) ?? Math.round(total / dateCols.length);
+  const avg = toNumber(row["Avg Daily Steps"]) ?? Math.round(total / dateCols.length);  // Fixed: 'r' to 'row'
 
   const { steps } = getSeriesForPerson(row);
   const best = Math.max(...steps.map(v => v ?? 0));
@@ -88,77 +89,93 @@ function setStats(row) {
   `;
 }
 
-function buildCharts(row) {
+// ...existing code..
+function buildCharts(rows) {
   const labels = dateCols;
-  const { steps, cum } = getSeriesForPerson(row);
-
+  
   const dailyCtx = document.getElementById("dailyChart");
   const cumCtx = document.getElementById("cumChart");
-
+  
   if (dailyChart) dailyChart.destroy();
   if (cumChart) cumChart.destroy();
-
+  
+  const dailyDatasets = rows.map(row => {
+    const { steps } = getSeriesForPerson(row);
+    return {
+      label: getName(row),
+      data: steps,
+      tension: 0.3,
+      pointRadius: 4,
+      pointHoverRadius: 6
+    };
+  });
+  
+  const cumDatasets = rows.map(row => {
+    const { cum } = getSeriesForPerson(row);
+    return {
+      label: getName(row),
+      data: cum,
+      tension: 0.3,
+      pointRadius: 4,
+      pointHoverRadius: 6
+    };
+  });
+  
   dailyChart = new Chart(dailyCtx, {
     type: "line",
-    data: {
-      labels,
-      datasets: [{
-        label: "Steps",
-        data: steps,
-        tension: 0.3,
-        pointRadius: 4,
-        pointHoverRadius: 6
-      }]
-    },
+    data: { labels, datasets: dailyDatasets },
     options: {
       responsive: true,
-      animation: {
-        duration: 350
-      },
-      scales: {
-        y: { beginAtZero: true }
-      }
+      animation: { duration: 350 },
+      scales: { y: { beginAtZero: true } }
     }
   });
-
+  
   cumChart = new Chart(cumCtx, {
     type: "line",
-    data: {
-      labels,
-      datasets: [{
-        label: "Cumulative",
-        data: cum,
-        tension: 0.3,
-        pointRadius: 4,
-        pointHoverRadius: 6
-      }]
-    },
+    data: { labels, datasets: cumDatasets },
     options: {
       responsive: true,
-      animation: {
-        duration: 350
-      },
-      scales: {
-        y: { beginAtZero: true }
-      }
+      animation: { duration: 350 },
+      scales: { y: { beginAtZero: true } }
     }
   });
 }
 
 function onPersonChange() {
   const sel = document.getElementById("personSelect");
-  const name = sel.value;
-  const row = allRows.find(r => getName(r) === name);
-  if (!row) return;
+  const selectedNames = Array.from(sel.selectedOptions).map(opt => opt.value);
+  if (selectedNames.length === 0) return;
 
   stopReplay();
-  setStats(row);
-  buildCharts(row);
-
-  const { steps, cum } = getSeriesForPerson(row);
-  replaySeries = dateCols.map((d, i) => ({ date: d, steps: steps[i], cum: cum[i] }));
-  replayIndex = 0;
-  setReplayText(null);
+  
+  const selectedRows = selectedNames.map(name => allRows.find(r => getName(r) === name)).filter(Boolean);
+  
+  // For stats, show for the first selected person (or aggregate if needed)
+  if (selectedRows.length === 1) {
+    setStats(selectedRows[0]);
+  } else {
+    // Clear or show comparative stats
+    document.getElementById("stats").innerHTML = `<div class="stat">Comparing ${selectedNames.length} participants</div>`;
+  }
+  
+  buildCharts(selectedRows);
+  
+  // Disable replay for multi-person
+  const playBtn = document.getElementById("playBtn");
+  const pauseBtn = document.getElementById("pauseBtn");
+  if (selectedNames.length > 1) {
+    playBtn.disabled = true;
+    pauseBtn.disabled = true;
+    setReplayText(null);
+  } else {
+    playBtn.disabled = false;
+    pauseBtn.disabled = false;
+    const { steps, cum } = getSeriesForPerson(selectedRows[0]);
+    replaySeries = dateCols.map((d, i) => ({ date: d, steps: steps[i], cum: cum[i] }));
+    replayIndex = 0;
+    setReplayText(null);
+  }
 }
 
 function setReplayText(item) {
@@ -215,6 +232,7 @@ function stopReplay() {
 function wireReplayButtons() {
   document.getElementById("playBtn").addEventListener("click", playReplay);
   document.getElementById("pauseBtn").addEventListener("click", stopReplay);
+  document.getElementById("updateBtn").addEventListener("click", onPersonChange);
 }
 
 function initDropdown() {
@@ -227,8 +245,9 @@ function initDropdown() {
     opt.textContent = n;
     sel.appendChild(opt);
   });
-  sel.addEventListener("change", onPersonChange);
+  // Remove change listener; use update button instead
 }
+// ...existing code...
 
 function loadCSV() {
   Papa.parse(CSV_URL, {
@@ -247,8 +266,9 @@ function loadCSV() {
       initDropdown();
       wireReplayButtons();
 
-      document.getElementById("personSelect").selectedIndex = 0;
-      onPersonChange();
+      // Remove or comment out to start with no selection
+      // document.getElementById("personSelect").selectedIndex = 0;
+      // onPersonChange();  // Call only if you want initial charts
     },
     error: (err) => {
       console.error(err);
@@ -257,4 +277,5 @@ function loadCSV() {
   });
 }
 
+// ...existing code...
 loadCSV();
