@@ -11,11 +11,12 @@
 <body>
   <div class="container">
     <h1>Joseph's Tribe Steps Leaderboard</h1>
-    <p class="sub">Weekly updates • Pick your name to see progress</p>
+    <p class="sub">Weekly updates • Select one or more names to compare progress</p>
 
     <div class="card">
-      <label for="personSelect">Select participant</label>
-      <select id="personSelect"></select>
+      <label for="personSelect">Select participant(s) (hold Ctrl/Cmd to select multiple)</label>
+      <select id="personSelect" multiple size="5"></select>
+      <button id="updateBtn">Update Charts</button>
 
       <div class="stats" id="stats"></div>
     </div>
