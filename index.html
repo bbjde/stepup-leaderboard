@@ -35,6 +35,9 @@
         </label>
       </div>
       <div id="replayText" class="replayText"></div>
+      <p class="replayNote">
+  Note: Replay currently works for one participant at a time. Multi-participant playback is not supported yet.
+</p>
     </div>
     
     <div class="card">
@@ -48,15 +51,24 @@
     </div>
 
     <div class="card">
-      <h2>Leaderboard (Total steps)</h2>
-      <table id="leaderboard">
-        <thead>
-          <tr><th>Rank</th><th>Name</th><th>Total Steps</th><th>Avg Daily</th></tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
+  <h2 id="monthlyLeaderboardTitle">Monthly Leaderboard</h2>
+  <table id="monthlyLeaderboard">
+    <thead>
+      <tr><th>Rank</th><th>Name</th><th>Month Steps</th><th>Avg Daily</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
 
+<div class="card">
+  <h2>Leaderboard (Total steps)</h2>
+  <table id="leaderboard">
+    <thead>
+      <tr><th>Rank</th><th>Name</th><th>Total Steps</th><th>Avg Daily</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
 
     <p class="footer">Data source: weekly StepUp group export</p>
   </div>

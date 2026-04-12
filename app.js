@@ -37,6 +37,30 @@ function buildDateCols(rows) {
   const cols = Object.keys(rows[0] || {});
   return cols.filter(isDateLike).sort();
 }
+function getLatestDate(dateCols) {
+  if (!dateCols.length) return null;
+  return new Date(dateCols[dateCols.length - 1]);
+}
+
+function getMonthDateCols(dateCols) {
+  const latestDate = getLatestDate(dateCols);
+  if (!latestDate) return [];
+
+  const latestYear = latestDate.getFullYear();
+  const latestMonth = latestDate.getMonth();
+
+  return dateCols.filter(d => {
+    const dt = new Date(d);
+    return dt.getFullYear() === latestYear && dt.getMonth() === latestMonth;
+  });
+}
+
+function formatMonthYear(dateObj) {
+  return dateObj.toLocaleString("en-GB", {
+    month: "long",
+    year: "numeric"
+  });
+}
 
 function getSeriesForPerson(row) {
   const steps = dateCols.map(d => toNumber(row[d]));
@@ -59,6 +83,40 @@ function buildLeaderboard() {
     const avg = toNumber(r["Avg Daily Steps"]) ?? Math.round(total / dateCols.length);
     return { name, total, avg };
   }).sort((a, b) => b.total - a.total);
+
+  ranked.forEach((r, i) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${i + 1}</td><td>${r.name}</td><td>${fmt(r.total)}</td><td>${fmt(r.avg)}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function buildMonthlyLeaderboard() {
+  const tbody = document.querySelector("#monthlyLeaderboard tbody");
+  const title = document.getElementById("monthlyLeaderboardTitle");
+
+  if (!tbody || !title) return;
+
+  tbody.innerHTML = "";
+
+  const monthCols = getMonthDateCols(dateCols);
+  const latestDate = getLatestDate(dateCols);
+
+  if (!monthCols.length || !latestDate) {
+    title.textContent = "Monthly Leaderboard";
+    return;
+  }
+
+  const ranked = allRows.map(r => {
+    const name = getName(r);
+    const total = sum(monthCols.map(d => toNumber(r[d])));
+    const activeDays = monthCols.filter(d => toNumber(r[d]) !== null).length;
+    const avg = activeDays ? Math.round(total / activeDays) : 0;
+
+    return { name, total, avg };
+  }).sort((a, b) => b.total - a.total);
+
+  title.textContent = `${formatMonthYear(latestDate)} Leaderboard`;
 
   ranked.forEach((r, i) => {
     const tr = document.createElement("tr");
@@ -262,10 +320,10 @@ function loadCSV() {
       }
       dateCols = buildDateCols(allRows);
 
-      buildLeaderboard();
-      initDropdown();
-      wireReplayButtons();
-
+buildMonthlyLeaderboard();
+buildLeaderboard();
+initDropdown();
+wireReplayButtons();
       // Remove or comment out to start with no selection
       // document.getElementById("personSelect").selectedIndex = 0;
       // onPersonChange();  // Call only if you want initial charts
