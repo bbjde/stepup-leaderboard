@@ -15,8 +15,15 @@
 
     <div class="card">
       <label for="personSelect">Select participant(s) (hold Ctrl/Cmd to select multiple)</label>
-      <select id="personSelect" multiple size="5"></select>
-      <button id="updateBtn">Update Charts</button>
+      <input id="personSearch" aria-label="Search participants by name" placeholder="Search participants..." />
+      <div id="selectedChips" aria-live="polite" aria-label="Selected participants" style="margin:8px 0 6px;display:flex;gap:6px;flex-wrap:wrap"></div>
+      <select id="personSelect" multiple size="6" aria-label="Participant list - hold Ctrl/Cmd to select multiple"></select>
+      <div style="margin-top:8px; display:flex; gap:8px; align-items:center;">
+        <button id="selectAllBtn" aria-label="Select all visible participants">Select all</button>
+        <button id="clearSelectionBtn" aria-label="Clear all selections">Clear</button>
+        <button id="updateBtn" aria-label="Update charts with selected participants">Update Charts</button>
+        <div id="selectedCount" style="margin-left:auto;color:#4a5568;font-size:14px" aria-live="polite"></div>
+      </div>
 
       <div class="stats" id="stats"></div>
     </div>

@@ -402,6 +402,74 @@ function initDropdown() {
   });
   // Remove change listener; use update button instead
 }
+
+function updateSelectedCount() {
+  const sel = document.getElementById("personSelect");
+  const countEl = document.getElementById("selectedCount");
+  const c = sel.selectedOptions.length;
+  countEl.textContent = c ? `${c} selected` : "";
+}
+
+function wireSelectorControls() {
+  const search = document.getElementById("personSearch");
+  const sel = document.getElementById("personSelect");
+  const selectAllBtn = document.getElementById("selectAllBtn");
+  const clearBtn = document.getElementById("clearSelectionBtn");
+
+  search.addEventListener("input", (e) => {
+    const q = e.target.value.trim().toLowerCase();
+    Array.from(sel.options).forEach(opt => {
+      const match = !q || opt.value.toLowerCase().includes(q);
+      opt.style.display = match ? "block" : "none";
+    });
+  });
+
+  selectAllBtn.addEventListener("click", () => {
+    Array.from(sel.options).forEach(opt => { if (opt.style.display !== 'none') opt.selected = true; });
+    updateSelectedCount();
+    renderSelectedChips();
+  });
+
+  clearBtn.addEventListener("click", () => {
+    Array.from(sel.options).forEach(opt => opt.selected = false);
+    updateSelectedCount();
+    renderSelectedChips();
+  });
+
+  sel.addEventListener("change", updateSelectedCount);
+  // render chips initially
+  renderSelectedChips();
+}
+
+function renderSelectedChips() {
+  const sel = document.getElementById("personSelect");
+  const chips = document.getElementById("selectedChips");
+  chips.innerHTML = "";
+  Array.from(sel.selectedOptions).forEach(opt => {
+    const chip = document.createElement("div");
+    chip.className = "chip";
+    chip.tabIndex = 0;
+    chip.setAttribute('role', 'button');
+    chip.setAttribute('aria-label', `Remove ${opt.value}`);
+    chip.innerHTML = `<span class="chip-label">${opt.value}</span><button class="chip-remove" aria-label="remove">×</button>`;
+    // click to remove
+    chip.querySelector('.chip-remove').addEventListener('click', (e) => {
+      e.stopPropagation();
+      opt.selected = false;
+      updateSelectedCount();
+      renderSelectedChips();
+    });
+    // keyboard support
+    chip.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === 'Delete' || e.key === 'Backspace') {
+        opt.selected = false;
+        updateSelectedCount();
+        renderSelectedChips();
+      }
+    });
+    chips.appendChild(chip);
+  });
+}
 // ...existing code...
 
 function loadCSV() {
@@ -421,6 +489,7 @@ buildMonthlyLeaderboard();
 buildLeaderboard();
 initDropdown();
 wireReplayButtons();
+      wireSelectorControls();
       // Remove or comment out to start with no selection
       // document.getElementById("personSelect").selectedIndex = 0;
       // onPersonChange();  // Call only if you want initial charts

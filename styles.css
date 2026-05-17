@@ -37,9 +37,86 @@ select, button {
   color: #1a365d; /* Deep navy text */
   transition: background 0.2s;
 }
+input#personSearch {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 2px solid #e2e8f0;
+  width: 320px;
+  margin-bottom: 8px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+input#personSearch:focus {
+  outline: none;
+  border-color: #d4af37;
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.3);
+}
+select#personSelect option[style] { display: block; }
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  background: #fff7ed;
+  border: 1px solid #f59e0b;
+  border-radius: 999px;
+  font-size: 13px;
+  color: #92400e;
+  transition: background 0.2s, border-color 0.2s;
+}
+.chip:hover {
+  background: #fed7aa;
+}
+.chip:focus { 
+  outline: 2px solid #f59e0b;
+  outline-offset: 2px;
+}
+.chip .chip-remove {
+  background: transparent;
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
+  color: #92400e;
+  padding: 0;
+  line-height: 1;
+}
+.chip .chip-remove:focus {
+  outline: 1px solid #92400e;
+  border-radius: 2px;
+}
+
+@media (max-width: 768px) {
+  .container { padding: 0 10px; }
+  .card { padding: 12px; margin: 8px 0; }
+  input#personSearch { width: 100%; }
+  .controls { gap: 6px; }
+  button { font-size: 14px; padding: 6px 8px; }
+  .stats { gap: 10px; }
+  .stat { min-width: 140px; padding: 8px; font-size: 13px; }
+  .stat b { font-size: 16px; }
+  table { font-size: 13px; }
+  th, td { padding: 8px; }
+}
+
+@media (max-width: 480px) {
+  h1 { font-size: 20px; }
+  .sub { font-size: 12px; }
+  input#personSearch { width: 100%; font-size: 14px; }
+  select#personSelect { font-size: 14px; }
+  .controls { flex-direction: column; gap: 6px; }
+  button { width: 100%; }
+  #selectedCount { margin-left: 0; margin-top: 4px; }
+  .chip { font-size: 12px; padding: 5px 6px; }
+  .stats { gap: 8px; }
+  .stat { min-width: 100%; }
+}
 button:hover { 
   background: #f59e0b; /* Orange accent on hover */
   color: white;
+}
+button:focus, select:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px white, 0 0 0 4px #d4af37;
 }
 .controls { 
   display: flex; 
