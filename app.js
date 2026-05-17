@@ -1,4 +1,4 @@
-const CSV_URL = "data/steps.csv";
+const CSV_URL = "data/steps.csv?t=" + new Date().getTime();
 
 let allRows = [];
 let dateCols = [];
