@@ -33,10 +33,22 @@
             <option value="250">Fast</option>
           </select>
         </label>
+        <label>Timeframe
+          <select id="timeframeSelect">
+            <option value="all">All dates</option>
+            <option value="currentMonth">Current month</option>
+            <option value="previousMonth">Previous month</option>
+            <option value="last7">Last 7 days</option>
+            <option value="last14">Last 14 days</option>
+            <option value="last30">Last 30 days</option>
+            <option value="last90">Last 90 days</option>
+            <option value="previous3Months">Previous 3 months</option>
+          </select>
+        </label>
       </div>
       <div id="replayText" class="replayText"></div>
       <p class="replayNote">
-  Note: Replay currently works for one participant at a time. Multi-participant playback is not supported yet.
+  Note: Replay works for one or more participants. Use the timeframe selector to replay a subset of dates.
 </p>
     </div>
     
